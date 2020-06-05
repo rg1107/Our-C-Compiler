@@ -407,7 +407,7 @@
 
 	void printST()
 	{
-		printf("%10s | %15s | %10s | %10s | %10s | %15s | %10s |\n","SYMBOL", "CLASS", "TYPE","VALUE", "LINE NO", "NESTING", "PARAMS COUNT");
+		printf("%10s | %10s | %15s | %10s | %10s | %15s | %10s |\n","SYMBOL", "TYPE", "CLASS", "VALUE","SCOPE", "NO OF PARAMS","LINE NO");
 		for(int i=0;i<100;i++) {
 			printf("-");
 		}
@@ -418,7 +418,7 @@
 			{
 				continue;
 			}
-			printf("%10s | %15s | %10s | %10s | %10d | %15d | %10d |\n",ST[i].name, ST[i].class, ST[i].type, ST[i].value, ST[i].lineno, ST[i].nestval, ST[i].params_count);
+			printf("%10s | %10s | %15s | %10s | %10d | %15d | %10d |\n",ST[i].name, ST[i].type, ST[i].class, ST[i].value, ST[i].nestval, ST[i].params_count, ST[i].lineno);
 		}
     }
 

@@ -382,41 +382,40 @@ void printCT();
 
 int main(int argc , char **argv)
 {
-	yyin = fopen(argv[1], "r");
-	yyparse();
+yyin = fopen(argv[1], "r");
+yyparse();
 
 	if(flag == 0)
 	{
-		printf(ANSI_COLOR_GREEN "Status: Parsing Complete - Valid" ANSI_COLOR_RESET "\n");
-		printf("%30s" ANSI_COLOR_CYAN "SYMBOL TABLE" ANSI_COLOR_RESET "\n", " ");
-		printf("%30s %s\n", " ", "------------");
-		printST();
+printf("Parsing is SuccessFull!!" ANSI_COLOR_RESET "\n");
+printf("%30s" "Symbol-Table" ANSI_COLOR_RESET "\n", " ");
+printf("%30s\n", " ");
+printST();
 
-		printf("\n\n%30s" ANSI_COLOR_CYAN "CONSTANT TABLE" ANSI_COLOR_RESET "\n", " ");
-		printf("%30s %s\n", " ", "--------------");
-		printCT();
+printf("\n\n%30s" "Constant-Table" ANSI_COLOR_RESET "\n", " ");
+printf("%30s\n", " ");
+printCT();
 	}
 }
 
 void yyerror(char *s)
 {
-	printf(ANSI_COLOR_RED "%d %s %s\n", yylineno, s, yytext);
-	flag=1;
-	printf(ANSI_COLOR_RED "Status: Parsing Failed - Invalid\n" ANSI_COLOR_RESET);
-	exit(7);
+printf("%d %s %s\n", yylineno, s, yytext);
+flag=1;
+printf("Parsing was unsuccessful\n" ANSI_COLOR_RESET);
+exit(7);
 }
 
 void ins()
 {
-	insertSTtype(curid,curtype);
+insertSTtype(curid,curtype);
 }
 
 void insV()
 {
-	insertSTvalue(curid,curval);
+insertSTvalue(curid,curval);
 }
 
 int yywrap()
-{
-	return 1;
+{return 1;
 }

@@ -663,7 +663,7 @@ void yyerror(char *s)
 {
 printf("%d %s %s\n", yylineno, s, yytext);
 flag=1;
-printf("Status: Parsing Failed - Invalid\n" ANSI_COLOR_RESET);
+printf("Parsing has Failed\n" ANSI_COLOR_RESET);
 exit(7);
 }
 

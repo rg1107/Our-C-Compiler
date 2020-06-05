@@ -5,19 +5,19 @@
 
 #include<stdio.h>
 
-int main()
+void main()
 {
     int a=0;
     for (a = 0; a < 10; a++)
-        {
-        	printf("H1");
-        }
-    
-    while(a>0) {
+    {
+        printf("Hello World");
+    }
+    while(a>0) 
+    {
         a--;
     }
-
-    do {
+    while(a<10)
+    {
         a++;
-    }while(a<10);
+    }
 }

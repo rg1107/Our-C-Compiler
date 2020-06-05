@@ -419,7 +419,7 @@
 			{
 				continue;
 			}
-			printf("%10s | %10s | %15s | %10s | %10d | %15d | %10d |\n",ST[i].name, ST[i].type, ST[i].class, ST[i].value, ST[i].nestval, ST[i].params_count,, ST[i].lineno);
+			printf("%10s | %10s | %15s | %10s | %10d | %15d | %10d |\n",ST[i].name, ST[i].type, ST[i].class, ST[i].value, ST[i].nestval, ST[i].params_count, ST[i].lineno);
 		}
     }
 

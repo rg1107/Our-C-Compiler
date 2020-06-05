@@ -2,8 +2,8 @@
 
 void main()
 {
-    int i,n;
+    int k,l;
 
-    myfunc(i);
+    func(l);
     
 }

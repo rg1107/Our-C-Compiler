@@ -1,15 +1,14 @@
-
 #include<stdio.h>
 
-void myfunc(int a)
+int function(int x)
 {
-    return a;
+    return x;
 }
 
 void main()
 {
     int i,n;
 
-    myfunc(i);
+    function(i,n);
     
 }

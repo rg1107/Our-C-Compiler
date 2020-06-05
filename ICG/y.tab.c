@@ -2459,276 +2459,268 @@ void printCT();
 
 struct stack
 {
-	char value[100];
-	int labelvalue;
+char value[100];
+int labelvalue;
 }s[100],label[100];
 
 
 void push(char *x)
 {
-	strcpy(s[++top].value,x);
+strcpy(s[++top].value,x);
 }
 
 void swap(char *x, char *y)
 {
-	char temp = *x;
-	*x = *y;
-	*y = temp;
+char temp = *x;
+*x = *y;
+*y = temp;
 }
 
 void reverse(char str[], int length) 
 { 
-    int start = 0; 
-    int end = length -1; 
-    while (start < end) 
-    { 
-        swap((str+start), (str+end)); 
-        start++; 
-        end--; 
-    } 
+int start = 0; 
+int end = length -1; 
+while (start < end) 
+{ 
+ swap((str+start), (str+end)); 
+ start++; 
+ end--; 
+ } 
 } 
   
 char* itoa(int num, char* str, int base) 
 { 
-    int i = 0; 
-    int isNegative = 0; 
+int i = 0; 
+int isNegative = 0; 
   
    
-    if (num == 0) 
-    { 
-        str[i++] = '0'; 
-        str[i] = '\0'; 
-        return str; 
-    } 
-  
-    if (num < 0 && base == 10) 
-    { 
-        isNegative = 1; 
-        num = -num; 
-    } 
-  
-   
-    while (num != 0) 
-    { 
-        int rem = num % base; 
-        str[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0'; 
-        num = num/base; 
-    } 
-  
-    if (isNegative) 
-        str[i++] = '-'; 
-  
-    str[i] = '\0'; 
+if (num == 0) 
+{ 
+str[i++] = '0'; 
+str[i] = '\0'; 
+return str; 
+} 
+if (num < 0 && base == 10) 
+{ 
+isNegative = 1; 
+num = -num; 
+} 
   
    
-    reverse(str, i); 
+while (num != 0) 
+{ 
+int rem = num % base; 
+str[i++] = (rem > 9)? (rem-10) + 'a' : rem + '0'; 
+num = num/base; 
+} 
   
-    return str; 
+if (isNegative) 
+str[i++] = '-'; 
+  
+str[i] = '\0'; 
+  
+   
+reverse(str, i); 
+  
+return str; 
 } 
 
 void codegen()
 {
-	strcpy(temp,"t");
-	char buffer[100];
-	itoa(count,buffer,10);
-	strcat(temp,buffer);
-	printf("%s = %s %s %s\n",temp,s[top-2].value,s[top-1].value,s[top].value);
-	top = top - 2;
-	strcpy(s[top].value,temp);
-	count++; 
+strcpy(temp,"t");
+char buffer[100];
+itoa(count,buffer,10);
+strcat(temp,buffer);
+printf("%s = %s %s %s\n",temp,s[top-2].value,s[top-1].value,s[top].value);
+top = top - 2;
+strcpy(s[top].value,temp);
+count++; 
 }
 
 void codegencon()
 {
-	strcpy(temp,"t");
-	char buffer[100];
-	itoa(count,buffer,10);
-	strcat(temp,buffer);
-	printf("%s = %s\n",temp,curval);
-	push(temp);
-	count++;
-	
+strcpy(temp,"t");
+char buffer[100];
+itoa(count,buffer,10);
+strcat(temp,buffer);
+printf("%s = %s\n",temp,curval);
+push(temp);
+count++;	
 }
 
 int isunary(char *s)
 {
-	if(strcmp(s, "--")==0 || strcmp(s, "++")==0)
-	{
-		return 1;
-	}
-	return 0;
+if(strcmp(s, "--")==0 || strcmp(s, "++")==0)
+{
+return 1;
+}
+return 0;
 }
 
 void genunary()
 {
-	char temp1[100], temp2[100], temp3[100];
-	strcpy(temp1, s[top].value);
-	strcpy(temp2, s[top-1].value);
+char temp1[100], temp2[100], temp3[100];
+strcpy(temp1, s[top].value);
+strcpy(temp2, s[top-1].value);
 
-	if(isunary(temp1))
-	{
-		strcpy(temp3, temp1);
-		strcpy(temp1, temp2);
-		strcpy(temp2, temp3);
-	}
-	strcpy(temp, "t");
-	char buffer[100];
-	itoa(count, buffer, 10);
-	strcat(temp, buffer);
-	count++;
+if(isunary(temp1))
+{
+strcpy(temp3, temp1);
+strcpy(temp1, temp2);
+strcpy(temp2, temp3);
+}
+strcpy(temp, "t");
+char buffer[100];
+itoa(count, buffer, 10);
+strcat(temp, buffer);
+count++;
 
-	if(strcmp(temp2,"--")==0)
-	{
-		printf("%s = %s - 1\n", temp, temp1);
-		printf("%s = %s\n", temp1, temp);
-	}
-
-	if(strcmp(temp2,"++")==0)
-	{
-		printf("%s = %s + 1\n", temp, temp1);
-		printf("%s = %s\n", temp1, temp);
-	}
-
-	top = top -2;
+if(strcmp(temp2,"--")==0)
+{
+printf("%s = %s - 1\n", temp, temp1);
+printf("%s = %s\n", temp1, temp);
+}
+if(strcmp(temp2,"++")==0)
+{
+printf("%s = %s + 1\n", temp, temp1);
+printf("%s = %s\n", temp1, temp);
+}
+top = top -2;
 }
 
 void codeassign()
 {
-	printf("%s = %s\n",s[top-2].value,s[top].value);
-	top = top - 2;
+printf("%s = %s\n",s[top-2].value,s[top].value);
+top = top - 2;
 }
 
 void label1()
 {
-	strcpy(temp,"L");
-	char buffer[100];
-	itoa(lno,buffer,10);
-	strcat(temp,buffer);
-	printf("IF not %s GoTo %s\n",s[top].value,temp);
-	label[++ltop].labelvalue = lno++;
+strcpy(temp,"L");
+char buffer[100];
+itoa(lno,buffer,10);
+strcat(temp,buffer);
+printf("IF not %s GoTo %s\n",s[top].value,temp);
+label[++ltop].labelvalue = lno++;
 }
 
 void label2()
 {
-	strcpy(temp,"L");
-	char buffer[100];
-	itoa(lno,buffer,10);
-	strcat(temp,buffer);
-	printf("GoTo %s\n",temp);
-	strcpy(temp,"L");
-	itoa(label[ltop].labelvalue,buffer,10);
-	strcat(temp,buffer);
-	printf("%s:\n",temp);
-	ltop--;
-	label[++ltop].labelvalue=lno++;
+strcpy(temp,"L");
+char buffer[100];
+itoa(lno,buffer,10);
+strcat(temp,buffer);
+printf("GoTo %s\n",temp);
+strcpy(temp,"L");
+itoa(label[ltop].labelvalue,buffer,10);
+strcat(temp,buffer);
+printf("%s:\n",temp);
+ltop--;
+label[++ltop].labelvalue=lno++;
 }
 
 void label3()
 {
-	strcpy(temp,"L");
-	char buffer[100];
-	itoa(label[ltop].labelvalue,buffer,10);
-	strcat(temp,buffer);
-	printf("%s:\n",temp);
-	ltop--;
-	
+strcpy(temp,"L");
+char buffer[100];
+itoa(label[ltop].labelvalue,buffer,10);
+strcat(temp,buffer);
+printf("%s:\n",temp);
+ltop--;	
 }
 
 void label4()
 {
-	strcpy(temp,"L");
-	char buffer[100];
-	itoa(lno,buffer,10);
-	strcat(temp,buffer);
-	printf("%s:\n",temp);
-	label[++ltop].labelvalue = lno++;
+strcpy(temp,"L");
+char buffer[100];
+itoa(lno,buffer,10);
+strcat(temp,buffer);
+printf("%s:\n",temp);
+label[++ltop].labelvalue = lno++;
 }
 
 
 void label5()
 {
-	strcpy(temp,"L");
-	char buffer[100];
-	itoa(label[ltop-1].labelvalue,buffer,10);
-	strcat(temp,buffer);
-	printf("GoTo %s:\n",temp);
-	strcpy(temp,"L");
-	itoa(label[ltop].labelvalue,buffer,10);
-	strcat(temp,buffer);
-	printf("%s:\n",temp);
-	ltop = ltop - 2;
-    
-   
+strcpy(temp,"L");
+char buffer[100];
+itoa(label[ltop-1].labelvalue,buffer,10);
+strcat(temp,buffer);
+printf("GoTo %s:\n",temp);
+strcpy(temp,"L");
+itoa(label[ltop].labelvalue,buffer,10);
+strcat(temp,buffer);
+printf("%s:\n",temp);
+ltop = ltop - 2;   
 }
 
 void funcgen()
 {
-	printf("func begin %s\n",currfunc);
+printf("func begin %s\n",currfunc);
 }
 
 void funcgenend()
 {
-	printf("func end\n\n");
+printf("func end\n\n");
 }
 
 void arggen(int i)
 {
-    if(i==1)
-    {
-	printf("refparam %s\n", curid);
-	}
-	else
-	{
-	printf("refparam %s\n", curval);
-	}
+if(i==1)
+{
+printf("refparam %s\n", curid);
+}
+else
+{
+printf("refparam %s\n", curval);
+}
 }
 
 void callgen()
 {
-	printf("refparam result\n");
-	push("result");
-	printf("call %s, %d\n",currfunccall,call_params_count);
+printf("refparam result\n");
+push("result");
+printf("call %s, %d\n",currfunccall,call_params_count);
 }
 
 
 
 int main(int argc , char **argv)
 {
-	yyin = fopen(argv[1], "r");
-	yyparse();
+yyin = fopen(argv[1], "r");
+yyparse();
 
-	if(flag == 0)
-	{
-		printf(ANSI_COLOR_GREEN "Status: Parsing Complete - Valid" ANSI_COLOR_RESET "\n");
-		printf("%30s" ANSI_COLOR_CYAN "SYMBOL TABLE" ANSI_COLOR_RESET "\n", " ");
-		printf("%30s %s\n", " ", "------------");
-		printST();
-
-		printf("\n\n%30s" ANSI_COLOR_CYAN "CONSTANT TABLE" ANSI_COLOR_RESET "\n", " ");
-		printf("%30s %s\n", " ", "--------------");
-		printCT();
-	}
+if(flag == 0)
+{
+printf( "Parsing is SuccessFull" ANSI_COLOR_RESET "\n");
+printf("%30s""Symbol table" ANSI_COLOR_RESET "\n", " ");
+printf("%30s\n", " ");
+printST();
+printf("\n\n%30s""Constant table" ANSI_COLOR_RESET "\n", " ");
+printf("%30s\n", " ");
+printCT();
+}
 }
 
 void yyerror(char *s)
 {
-	printf(ANSI_COLOR_RED "%d %s %s\n", yylineno, s, yytext);
-	flag=1;
-	printf(ANSI_COLOR_RED "Status: Parsing Failed - Invalid\n" ANSI_COLOR_RESET);
-	exit(7);
+printf("%d %s %s\n", yylineno, s, yytext);
+flag=1;
+printf("Parsing has Failed\n" ANSI_COLOR_RESET);
+exit(7);
 }
 
 void ins()
 {
-	insertSTtype(curid,curtype);
+insertSTtype(curid,curtype);
 }
 
 void insV()
 {
-	insertSTvalue(curid,curval);
+insertSTvalue(curid,curval);
 }
 
 int yywrap()
 {
-	return 1;
+return 1;
 }

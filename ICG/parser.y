@@ -5,18 +5,6 @@
 	
 	void yyerror(char* s);
 	int yylex();
-	void ins();
-	void insV();
-	int flag=0;
-	#define ANSI_COLOR_RED		"\x1b[31m"
-	#define ANSI_COLOR_GREEN	"\x1b[32m"
-	#define ANSI_COLOR_CYAN		"\x1b[36m"
-	#define ANSI_COLOR_RESET	"\x1b[0m"
-	extern char curid[20];
-	extern char curtype[20];
-	extern char curval[20];
-	extern int currnest;
-	void deletedata (int );
 	int checkscope(char*);
 	int check_id_is_func(char *);
 	void insertST(char*, char*);
@@ -28,6 +16,14 @@
 	int check_params(char*);
 	int duplicate(char *s);
 	int checkarray(char*);
+	void ins();
+	void insV();
+	int flag=0;
+	extern char curid[20];
+	extern char curtype[20];
+	extern char curval[20];
+	extern int currnest;
+	void deletedata (int );
 	char currfunctype[100];
 	char currfunc[100];
 	char currfunccall[100];
@@ -46,6 +42,10 @@
 	void label4();
 	void label5();
 	void label6();
+	int params_count=0;
+	int call_params_count=0;
+	int top = 0,count=0,ltop=0,lno=0;
+	char temp[3] = "t";
 	void genunary();
 	void codegencon();
 	void funcgen();
@@ -53,10 +53,7 @@
 	void arggen();
 	void callgen();
 
-	int params_count=0;
-	int call_params_count=0;
-	int top = 0,count=0,ltop=0,lno=0;
-	char temp[3] = "t";
+	
 %}
 
 %nonassoc IF
@@ -99,14 +96,14 @@
 %start program
 
 %%
-program
-			: declaration_list;
+start
+			: declarations;
 
-declaration_list
-			: declaration D 
+declarations
+			: declaration declare
 
-D
-			: declaration_list
+declare
+			: declarations
 			| ;
 
 declaration

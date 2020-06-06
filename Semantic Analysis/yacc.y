@@ -8,10 +8,6 @@
 	void ins();
 	void insV();
 	int flag=0;
-	#define ANSI_COLOR_RED		"\x1b[31m"
-	#define ANSI_COLOR_GREEN	"\x1b[32m"
-	#define ANSI_COLOR_CYAN		"\x1b[36m"
-	#define ANSI_COLOR_RESET	"\x1b[0m"
 	extern char curid[20];
 	extern char curtype[20];
 	extern char curval[20];
@@ -387,12 +383,12 @@ yyparse();
 
 	if(flag == 0)
 	{
-printf("Parsing is SuccessFull!!" ANSI_COLOR_RESET "\n");
-printf("%30s" "Symbol-Table" ANSI_COLOR_RESET "\n", " ");
+printf("Parsing is SuccessFull!!\n");
+printf("%30s" "Symbol-Table\n", " ");
 printf("%30s\n", " ");
 printST();
 
-printf("\n\n%30s" "Constant-Table" ANSI_COLOR_RESET "\n", " ");
+printf("\n\n%30s" "Constant-Table\n", " ");
 printf("%30s\n", " ");
 printCT();
 	}
@@ -402,7 +398,7 @@ void yyerror(char *s)
 {
 printf("%d %s %s\n", yylineno, s, yytext);
 flag=1;
-printf("Parsing was unsuccessful\n" ANSI_COLOR_RESET);
+printf("Parsing was unsuccessful\n");
 exit(7);
 }
 

@@ -31,27 +31,26 @@
 	char gettype(char*,int);
 	char getfirst(char*);
 	void push(char *s);
-	void codegen();
-	void codeassign();
+	void ThreeAddrGenerator();
+	void CodeAssignment();
 	char* itoa(int num, char* str, int base);
 	void reverse(char str[], int length); 
 	void swap(char*,char*);
-	void label1();
-	void label2();
-	void label3();
-	void label4();
-	void label5();
-	void label6();
+	void Pointer1();
+	void Pointer2();
+	void Pointer3();
+	void Pointer4();
+	void Pointer5();
 	int params_count=0;
 	int call_params_count=0;
 	int top = 0,count=0,ltop=0,lno=0;
 	char temp[3] = "t";
 	void genunary();
-	void codegencon();
-	void funcgen();
-	void funcgenend();
-	void arggen();
-	void callgen();
+	void ConstGenerator();
+	void FunctionGenerator();
+	void FunctionGeneratorEnd();
+	void ArgGenerator();
+	void CallGenerator();
 
 	
 %}
@@ -93,7 +92,7 @@
 %left increment_operator decrement_operator 
 
 
-%start program
+%start start
 
 %%
 start
@@ -103,12 +102,10 @@ declarations
 			: declaration declare
 
 declare
-			: declarations
-			| ;
+			: declarations | ;
 
 declaration
-			: variable_declaration 
-			| function_declaration
+			: variable_declaration | function_declaration
 
 variable_declaration
 			: type_specifier variable_declaration_list ';' 
@@ -125,17 +122,14 @@ variable_declaration_identifier
 vdi : identifier_array_type | assignment_operator simple_expression  ; 
 
 identifier_array_type
-			: '[' initilization_params
-			| ;
+			: '[' initilization_params | ;
 
 initilization_params
 			: integer_constant ']' initilization {if($$ < 1) {printf("Wrong array size\n"); exit(0);} }
 			| ']' string_initilization;
 
 initilization
-			: string_initilization
-			| array_initialization
-			| ;
+			: string_initilization | array_initialization | ;
 
 type_specifier 
 			: INT | CHAR | FLOAT  | DOUBLE  
@@ -164,7 +158,7 @@ function_declaration_type
 			: type_specifier identifier '('  { strcpy(currfunctype, curtype); strcpy(currfunc, curid); check_duplicate(curid); insertSTF(curid); ins(); };
 
 function_declaration_param_statement
-			: {params_count=0;}params ')' {funcgen();} statement {funcgenend();};
+			: {params_count=0;}params ')' {FunctionGenerator();} statement {FunctionGeneratorEnd();};
 
 params 
 			: parameters_list { insertSTparamscount(currfunc, params_count); }| { insertSTparamscount(currfunc, params_count); };
@@ -176,44 +170,37 @@ parameters_identifier_list
 			: param_identifier parameters_identifier_list_breakup;
 
 parameters_identifier_list_breakup
-			: ',' parameters_list 
-			| ;
+			: ',' parameters_list | ;
 
 param_identifier 
 			: identifier { ins();insertSTnest(curid,1); params_count++; } param_identifier_breakup;
 
 param_identifier_breakup
-			: '[' ']'
-			| ;
+			: '[' ']' | ;
 
 statement 
-			: expression_statment | compound_statement 
-			| conditional_statements | iterative_statements 
-			| return_statement | break_statement 
-			| variable_declaration;
+			: expression_statment | compound_statement | conditional_statements | iterative_statements 
+			| return_statement | break_statement | variable_declaration;
 
 compound_statement 
 			: {currnest++;} '{'  statment_list  '}' {deletedata(currnest);currnest--;}  ;
 
 statment_list 
-			: statement statment_list 
-			| ;
+			: statement statment_list | ;
 
 expression_statment 
-			: expression ';' 
-			| ';' ;
+			: expression ';' | ';' ;
 
 conditional_statements 
-			: IF '(' simple_expression ')' {label1();if($3!=1){printf("Condition checking is not of type int\n");exit(0);}} statement {label2();}  conditional_statements_breakup;
+			: IF '(' simple_expression ')' {Pointer1();if($3!=1){printf("Condition checking is not of type int\n");exit(0);}} statement {Pointer2();}  conditional_statements_breakup;
 
 conditional_statements_breakup
-			: ELSE statement {label3();}
-			| {label3();};
+			: ELSE statement {Pointer3();} | {Pointer3();};
 
 iterative_statements 
-			: WHILE '(' {label4();} simple_expression ')' {label1();if($4!=1){printf("Condition checking is not of type int\n");exit(0);}} statement {label5();} 
-			| FOR '(' expression ';' {label4();} simple_expression ';' {label1();if($6!=1){printf("Condition checking is not of type int\n");exit(0);}} expression ')'statement {label5();} 
-			| {label4();}DO statement WHILE '(' simple_expression ')'{label1();label5();if($6!=1){printf("Condition checking is not of type int\n");exit(0);}} ';';
+			: WHILE '(' {Pointer4();} simple_expression ')' {Pointer1();if($4!=1){printf("Condition checking is not of type int\n");exit(0);}} statement {Pointer5();} 
+			| FOR '(' expression ';' {Pointer4();} simple_expression ';' {Pointer1();if($6!=1){printf("Condition checking is not of type int\n");exit(0);}} expression ')'statement {Pointer5();} 
+			| {Pointer4();}DO statement WHILE '(' simple_expression ')'{Pointer1();Pointer5();if($6!=1){printf("Condition checking is not of type int\n");exit(0);}} ';';
 return_statement 
 			: RETURN ';' {if(strcmp(currfunctype,"void")) {printf("Returning void of a non-void function\n"); exit(0);}}
 			| RETURN expression ';' { 	if(!strcmp(currfunctype, "void"))
@@ -241,8 +228,7 @@ array_int_declarations
 			: integer_constant array_int_declarations_breakup;
 
 array_int_declarations_breakup
-			: ',' array_int_declarations 
-			| ;
+			: ',' array_int_declarations | ;
 
 expression 
 			: mutable assignment_operator {push("=");} expression   {   
@@ -252,28 +238,28 @@ expression
 			                                                          } 
 			                                                          else 
 			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
-			                                                          codeassign();
+			                                                          CodeAssignment();
 			                                                       }
 			| mutable addition_assignment_operator {push("+=");}expression {  
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
-			                                                          codeassign();
+			                                                          CodeAssignment();
 			                                                       }
 			| mutable subtraction_assignment_operator {push("-=");} expression  {	  
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
-			                                                          codeassign();
+			                                                          CodeAssignment();
 			                                                       }
 			| mutable multiplication_assignment_operator {push("*=");} expression {
 																	  if($1==1 && $4==1) 
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);}
-			                                                          codeassign(); 
+			                                                          CodeAssignment(); 
 			                                                       }
 			| mutable division_assignment_operator {push("/=");}expression 		{ 
 																	  if($1==1 && $4==1) 
@@ -286,7 +272,7 @@ expression
 			                                                          $$=1; 
 			                                                          else 
 			                                                          {$$=-1; printf("Type mismatch\n"); exit(0);} 
-			                                                          codeassign();
+			                                                          CodeAssignment();
 																	}
 			| mutable increment_operator 							{ push("++");if($1 == 1) $$=1; else $$=-1; genunary();}
 			| mutable decrement_operator  							{push("--");if($1 == 1) $$=1; else $$=-1;}
@@ -294,27 +280,27 @@ expression
 
 
 simple_expression 
-			: simple_expression OR_operator and_expression {push("||");} {if($1 == 1 && $3==1) $$=1; else $$=-1; codegen();}
+			: simple_expression OR_operator and_expression {push("||");} {if($1 == 1 && $3==1) $$=1; else $$=-1; ThreeAddrGenerator();}
 			| and_expression {if($1 == 1) $$=1; else $$=-1;};
 
 and_expression 
-			: and_expression AND_operator {push("&&");} unary_relation_expression  {if($1 == 1 && $3==1) $$=1; else $$=-1; codegen();}
+			: and_expression AND_operator {push("&&");} unary_relation_expression  {if($1 == 1 && $3==1) $$=1; else $$=-1; ThreeAddrGenerator();}
 			  |unary_relation_expression {if($1 == 1) $$=1; else $$=-1;} ;
 
 
 unary_relation_expression 
-			: exclamation_operator {push("!");} unary_relation_expression {if($2==1) $$=1; else $$=-1; codegen();} 
+			: exclamation_operator {push("!");} unary_relation_expression {if($2==1) $$=1; else $$=-1; ThreeAddrGenerator();} 
 			| regular_expression {if($1 == 1) $$=1; else $$=-1;} ;
 
 regular_expression 
-			: regular_expression relational_operators sum_expression {if($1 == 1 && $3==1) $$=1; else $$=-1; codegen();}
+			: regular_expression relational_operators sum_expression {if($1 == 1 && $3==1) $$=1; else $$=-1; ThreeAddrGenerator();}
 			  | sum_expression {if($1 == 1) $$=1; else $$=-1;} ;
 			
 relational_operators 
 			: greaterthan_assignment_operator {push(">=");} | lessthan_assignment_operator {push("<=");} | greaterthan_operator {push(">");}| lessthan_operator {push("<");}| equality_operator {push("==");}| inequality_operator {push("!=");} ;
 
 sum_expression 
-			: sum_expression sum_operators term  {if($1 == 1 && $3==1) $$=1; else $$=-1; codegen();}
+			: sum_expression sum_operators term  {if($1 == 1 && $3==1) $$=1; else $$=-1; ThreeAddrGenerator();}
 			| term {if($1 == 1) $$=1; else $$=-1;};
 
 sum_operators 
@@ -322,7 +308,7 @@ sum_operators
 			| subtract_operator {push("-");} ;
 
 term
-			: term MULOP factor {if($1 == 1 && $3==1) $$=1; else $$=-1; codegen();}
+			: term MULOP factor {if($1 == 1 && $3==1) $$=1; else $$=-1; ThreeAddrGenerator();}
 			| factor {if($1 == 1) $$=1; else $$=-1;} ;
 
 MULOP 
@@ -376,13 +362,13 @@ call
 			             arguments ')' 
 						 { if(strcmp(currfunccall,"printf"))
 							{ 
-								if(getSTparamscount(currfunccall)!=call_params_count)
-								{	
-									yyerror("Number of arguments in function call doesn't match number of parameters");
-									exit(8);
-								}
+							if(getSTparamscount(currfunccall)!=call_params_count)
+							{	
+							yyerror("Number of arguments in function call doesn't match number of parameters");
+							exit(8);
 							}
-							callgen();
+							}
+							CallGenerator();
 						 };
 
 arguments 
@@ -392,13 +378,13 @@ arguments_list
 			: arguments_list ',' exp { call_params_count++; }  
 			| exp { call_params_count++; };
 
-exp : identifier {arggen(1);} | integer_constant {arggen(2);} | string_constant {arggen(3);} | float_constant {arggen(4);} | character_constant {arggen(5);} ;
+exp : identifier {ArgGenerator(1);} | integer_constant {ArgGenerator(2);} | string_constant {ArgGenerator(3);} | float_constant {ArgGenerator(4);} | character_constant {ArgGenerator(5);} ;
 
 constant 
-			: integer_constant 	{  insV(); codegencon(); $$=1; } 
-			| string_constant	{  insV(); codegencon();$$=-1;} 
-			| float_constant	{  insV(); codegencon();} 
-			| character_constant{  insV(); codegencon();$$=1; };
+			: integer_constant 	{  insV(); ConstGenerator(); $$=1; } 
+			| string_constant	{  insV(); ConstGenerator();$$=-1;} 
+			| float_constant	{  insV(); ConstGenerator();} 
+			| character_constant{  insV(); ConstGenerator();$$=1; };
 
 %%
 
@@ -479,7 +465,7 @@ reverse(str, i);
 return str; 
 } 
 
-void codegen()
+void ThreeAddrGenerator()
 {
 strcpy(temp,"t");
 char buffer[100];
@@ -491,7 +477,7 @@ strcpy(s[top].value,temp);
 count++; 
 }
 
-void codegencon()
+void ConstGenerator()
 {
 strcpy(temp,"t");
 char buffer[100];
@@ -542,13 +528,42 @@ printf("%s = %s\n", temp1, temp);
 top = top -2;
 }
 
-void codeassign()
+void CodeAssignment()
 {
 printf("%s = %s\n",s[top-2].value,s[top].value);
 top = top - 2;
 }
 
-void label1()
+void FunctionGenerator()
+{
+printf("func begin %s\n",currfunc);
+}
+
+void FunctionGeneratorEnd()
+{
+printf("func end\n\n");
+}
+
+void ArgGenerator(int i)
+{
+if(i==1)
+{
+printf("refparam %s\n", curid);
+}
+else
+{
+printf("refparam %s\n", curval);
+}
+}
+
+void CallGenerator()
+{
+printf("refparam result\n");
+push("result");
+printf("call %s, %d\n",currfunccall,call_params_count);
+}
+
+void Pointer1()
 {
 strcpy(temp,"L");
 char buffer[100];
@@ -558,7 +573,7 @@ printf("IF not %s GoTo %s\n",s[top].value,temp);
 label[++ltop].labelvalue = lno++;
 }
 
-void label2()
+void Pointer2()
 {
 strcpy(temp,"L");
 char buffer[100];
@@ -573,7 +588,7 @@ ltop--;
 label[++ltop].labelvalue=lno++;
 }
 
-void label3()
+void Pointer3()
 {
 strcpy(temp,"L");
 char buffer[100];
@@ -583,7 +598,7 @@ printf("%s:\n",temp);
 ltop--;	
 }
 
-void label4()
+void Pointer4()
 {
 strcpy(temp,"L");
 char buffer[100];
@@ -594,7 +609,7 @@ label[++ltop].labelvalue = lno++;
 }
 
 
-void label5()
+void Pointer5()
 {
 strcpy(temp,"L");
 char buffer[100];
@@ -608,34 +623,7 @@ printf("%s:\n",temp);
 ltop = ltop - 2;   
 }
 
-void funcgen()
-{
-printf("func begin %s\n",currfunc);
-}
 
-void funcgenend()
-{
-printf("func end\n\n");
-}
-
-void arggen(int i)
-{
-if(i==1)
-{
-printf("refparam %s\n", curid);
-}
-else
-{
-printf("refparam %s\n", curval);
-}
-}
-
-void callgen()
-{
-printf("refparam result\n");
-push("result");
-printf("call %s, %d\n",currfunccall,call_params_count);
-}
 
 
 
@@ -646,11 +634,11 @@ yyparse();
 
 if(flag == 0)
 {
-printf( "Parsing is SuccessFull" ANSI_COLOR_RESET "\n");
-printf("%30s""Symbol table" ANSI_COLOR_RESET "\n", " ");
+printf( "Parsing is SuccessFull\n");
+printf("%30s""Symbol table\n", " ");
 printf("%30s\n", " ");
 printST();
-printf("\n\n%30s""Constant table" ANSI_COLOR_RESET "\n", " ");
+printf("\n\n%30s""Constant table\n", " ");
 printf("%30s\n", " ");
 printCT();
 }
@@ -660,7 +648,7 @@ void yyerror(char *s)
 {
 printf("%d %s %s\n", yylineno, s, yytext);
 flag=1;
-printf("Parsing has Failed\n" ANSI_COLOR_RESET);
+printf("Parsing has Failed\n");
 exit(7);
 }
 
